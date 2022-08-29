@@ -74,6 +74,8 @@
 - Fixed an issue where `kong docker-start` would fail if `KONG_PREFIX` was set to
   a relative path.
   [#9337](https://github.com/Kong/kong/pull/9337)
+- Fixed an issue with error-handling and process cleanup in `kong start`.
+  [#9337](https://github.com/Kong/kong/pull/9337)
 - Fix issue where external plugins crashing with unhandled exceptions
   would cause high CPU utilization after the automatic restart.
   [#9384](https://github.com/Kong/kong/pull/9384)
