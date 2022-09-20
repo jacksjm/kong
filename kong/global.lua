@@ -188,20 +188,18 @@ function _GLOBAL.init_worker_events()
   else
     -- `kong.configuration.prefix` is already normalized to an absoluate path,
     -- but `ngx.config.prefix()` is not
-    local prefix = configuration
-               and configuration.prefix
-                or require("pl.path").abspath(ngx.config.prefix())
+    local prefix = configuration and configuration.prefix or
+                   require("pl.path").abspath(ngx.config.prefix())
 
-    local sock = ngx.config.subsystem == "stream"
-             and "stream_worker_events.sock"
-              or "worker_events.sock"
+    local sock = ngx.config.subsystem == "stream" and
+                 "stream_worker_events.sock" or "worker_events.sock"
 
-    local listen = "unix:" .. prefix .. "/" .. sock
+    local listening = "unix:" .. prefix .. "/" .. sock
 
     opts = {
-      unique_timeout = 5,     -- life time of unique event data in lrucache
-      broker_id = 0,          -- broker server runs in nginx worker #0
-      listening = listen,     -- unix socket for broker listening
+      unique_timeout = 5,         -- life time of unique event data in lrucache
+      broker_id = 0,              -- broker server runs in nginx worker #0
+      listening = listening,      -- unix socket for broker listening
       max_queue_len = 1024 * 50,  -- max queue len for events buffering
     }
 
