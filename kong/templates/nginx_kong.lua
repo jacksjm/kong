@@ -453,7 +453,11 @@ server {
 > if not legacy_worker_events then
 server {
     server_name kong_worker_events;
+> if resty_events_sock_path and #resty_events_sock_path > 0 then
+    listen unix:${{RESTY_EVENTS_SOCK_PATH}}/worker_events.sock;
+> else
     listen unix:${{PREFIX}}/worker_events.sock;
+> end
     access_log off;
     location / {
         content_by_lua_block {
