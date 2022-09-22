@@ -859,3 +859,56 @@ describe("kong start/stop #" .. strategy, function()
 
 end)
 end
+
+describe("customize env resty_events_sock_path", function()
+  it("resty_events_sock_path equals to prefix by default", function()
+    local prefix = helpers.test_conf.prefix
+
+    assert(helpers.kong_exec("start", {
+      prefix = prefix,
+      database = "off",
+      stream_listen = "127.0.0.1:9022",
+    }))
+
+    assert.truthy(helpers.path.exists(prefix .. "/worker_events.sock"))
+    assert.truthy(helpers.path.exists(prefix .. "/stream_worker_events.sock"))
+
+    local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
+    assert.matches("listen unix:" .. prefix .. "/worker_events.sock;", contents, nil, true)
+
+    local contents = helpers.file.read(prefix .. "/nginx-kong-stream.conf")
+    assert.matches("listen unix:" .. prefix .. "/stream_worker_events.sock;", contents, nil, true)
+
+    assert(helpers.kong_exec("stop", {
+      prefix = prefix,
+    }))
+  end)
+
+  it("resty_events_sock_path is different from prefix", function()
+    local prefix = helpers.test_conf.prefix
+    local resty_events_sock_path = "/tmp"
+
+    assert(helpers.kong_exec("start", {
+      prefix = prefix,
+      resty_events_sock_path = resty_events_sock_path,
+      database = "off",
+      stream_listen = "127.0.0.1:9022",
+    }))
+
+    assert.falsy(helpers.path.exists(prefix .. "/worker_events.sock"))
+    assert.falsy(helpers.path.exists(prefix .. "/stream_worker_events.sock"))
+    assert.truthy(helpers.path.exists(resty_events_sock_path .. "/worker_events.sock"))
+    assert.truthy(helpers.path.exists(resty_events_sock_path .. "/stream_worker_events.sock"))
+
+    local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
+    assert.matches("listen unix:" .. resty_events_sock_path .. "/worker_events.sock;", contents, nil, true)
+
+    local contents = helpers.file.read(prefix .. "/nginx-kong-stream.conf")
+    assert.matches("listen unix:" .. resty_events_sock_path .. "/stream_worker_events.sock;", contents, nil, true)
+
+    assert(helpers.kong_exec("stop", {
+      prefix = prefix,
+    }))
+  end)
+end)
+
