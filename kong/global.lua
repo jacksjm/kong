@@ -188,9 +188,7 @@ function _GLOBAL.init_worker_events()
   else
     -- `kong.configuration.prefix` is already normalized to an absoluate path,
     -- but `ngx.config.prefix()` is not
-    local prefix = configuration and
-                   configuration.resty_events_sock_path or configuration.prefix or
-                   require("pl.path").abspath(ngx.config.prefix())
+    local prefix = configuration and configuration.resty_events_sock_path
 
     local sock = ngx.config.subsystem == "stream" and
                  "stream_worker_events.sock" or "worker_events.sock"

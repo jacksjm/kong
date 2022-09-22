@@ -221,11 +221,7 @@ server {        # ignore (and close }, to ignore content)
 
 > if not legacy_worker_events then
 server {
-> if resty_events_sock_path and #resty_events_sock_path > 0 then
     listen unix:${{RESTY_EVENTS_SOCK_PATH}}/stream_worker_events.sock;
-> else
-    listen unix:${{PREFIX}}/stream_worker_events.sock;
-> end
     error_log  ${{ADMIN_ERROR_LOG}} ${{LOG_LEVEL}};
     access_log off;
     content_by_lua_block {
