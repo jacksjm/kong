@@ -18,9 +18,10 @@ local function cleanup_dangling_unix_sockets(prefix, filenames)
 
   if filenames then
 
-    for filename in ipairs(filenames) do
+    -- only check special files
+    for _, filename in ipairs(filenames) do
       local path = prefix .. "/" .. filename
-      if is_socket(path) then
+      if  lfs.attributes(path, "mode") then
         table.insert(found, path)
       end
     end
@@ -48,10 +49,8 @@ local function cleanup_dangling_unix_sockets(prefix, filenames)
   log.warn("Attempting to remove dangling sockets before starting Kong...")
 
   for _, sock in ipairs(found) do
-    if is_socket(sock) then
-      log.warn("removing unix socket: %s", sock)
-      assert(os.remove(sock))
-    end
+    log.warn("removing unix socket: %s", sock)
+    assert(os.remove(sock))
   end
 end
 

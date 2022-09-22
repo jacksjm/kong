@@ -861,7 +861,7 @@ end)
 end
 
 describe("customize env resty_events_sock_path", function()
-  it("resty_events_sock_path equals to prefix by default", function()
+  it("equals to prefix by default", function()
     local prefix = helpers.test_conf.prefix
 
     assert(helpers.kong_exec("start", {
@@ -884,7 +884,7 @@ describe("customize env resty_events_sock_path", function()
     }))
   end)
 
-  it("resty_events_sock_path is different from prefix", function()
+  it("is different from prefix", function()
     local prefix = helpers.test_conf.prefix
     local resty_events_sock_path = "/tmp"
 
@@ -905,6 +905,25 @@ describe("customize env resty_events_sock_path", function()
 
     local contents = helpers.file.read(prefix .. "/nginx-kong-stream.conf")
     assert.matches("listen unix:" .. resty_events_sock_path .. "/stream_worker_events.sock;", contents, nil, true)
+
+    assert(helpers.kong_exec("stop", {
+      prefix = prefix,
+    }))
+  end)
+
+  it("dangling socket cleanup", function()
+    local prefix = helpers.test_conf.prefix
+    local resty_events_sock_path = "/tmp"
+
+    os.execute("touch " .. resty_events_sock_path .. "/worker_events.sock")
+    os.execute("touch " .. resty_events_sock_path .. "/stream_worker_events.sock")
+
+    assert(helpers.kong_exec("start", {
+      prefix = prefix,
+      resty_events_sock_path = resty_events_sock_path,
+      database = "off",
+      stream_listen = "127.0.0.1:9022",
+    }))
 
     assert(helpers.kong_exec("stop", {
       prefix = prefix,
