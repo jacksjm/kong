@@ -13,13 +13,25 @@ local function is_socket(path)
   return lfs.attributes(path, "mode") == "socket"
 end
 
-local function cleanup_dangling_unix_sockets(prefix)
+local function cleanup_dangling_unix_sockets(prefix, filenames)
   local found = {}
 
-  for child in lfs.dir(prefix) do
-    local path = prefix .. "/" .. child
-    if is_socket(path) then
-      table.insert(found, path)
+  if filenames then
+
+    for filename in ipairs(filenames) do
+      local path = prefix .. "/" .. filename
+      if is_socket(path) then
+        table.insert(found, path)
+      end
+    end
+
+  else
+
+    for child in lfs.dir(prefix) do
+      local path = prefix .. "/" .. child
+      if is_socket(path) then
+        table.insert(found, path)
+      end
     end
   end
 
@@ -62,6 +74,13 @@ local function execute(args)
   assert(prefix_handler.prepare_prefix(conf, args.nginx_conf))
 
   cleanup_dangling_unix_sockets(conf.prefix)
+
+  if conf.prefix ~= conf.resty_events_sock_path then
+    cleanup_dangling_unix_sockets(conf.resty_events_sock_path,
+                                  {"worker_events.sock",
+                                   "stream_worker_events.sock",
+                                  })
+  end
 
   _G.kong = kong_global.new()
   kong_global.init_pdk(_G.kong, conf)
