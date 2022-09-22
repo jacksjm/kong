@@ -21,7 +21,7 @@ local function cleanup_dangling_unix_sockets(prefix, filenames)
     -- only check special files
     for _, filename in ipairs(filenames) do
       local path = prefix .. "/" .. filename
-      if  lfs.attributes(path, "mode") then
+      if lfs.attributes(path, "mode") then
         table.insert(found, path)
       end
     end
