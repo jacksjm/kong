@@ -861,8 +861,10 @@ end)
 end
 
 describe("customize env resty_events_sock_path", function()
+  local prefix = helpers.test_conf.prefix
+  local resty_events_sock_path = "/tmp"
+
   it("equals to prefix by default", function()
-    local prefix = helpers.test_conf.prefix
 
     assert(helpers.kong_exec("start", {
       prefix = prefix,
@@ -885,8 +887,6 @@ describe("customize env resty_events_sock_path", function()
   end)
 
   it("is different from prefix", function()
-    local prefix = helpers.test_conf.prefix
-    local resty_events_sock_path = "/tmp"
 
     assert(helpers.kong_exec("start", {
       prefix = prefix,
@@ -912,8 +912,6 @@ describe("customize env resty_events_sock_path", function()
   end)
 
   it("dangling socket cleanup", function()
-    local prefix = helpers.test_conf.prefix
-    local resty_events_sock_path = "/tmp"
 
     os.execute("touch " .. resty_events_sock_path .. "/worker_events.sock")
     os.execute("touch " .. resty_events_sock_path .. "/stream_worker_events.sock")
