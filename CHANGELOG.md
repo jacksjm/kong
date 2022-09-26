@@ -83,11 +83,6 @@
   correctly created.
   [#9434](https://github.com/Kong/kong/pull/9434)
 
-#### Configuration
-
-- A new configuration item (`resty_events_sock_path`) has been added to allow
-  developers/operators to specify the unix domain socket file path of `resty.events`.
-  [#9337](https://github.com/Kong/kong/pull/9337)
 
 ## [3.0.0]
 
