@@ -1754,7 +1754,8 @@ local function load(path, custom_conf, opts)
   log.verbose("prefix in use: %s", conf.prefix)
 
   -- set resty-events unix domain socket file absolute path
-  conf.resty_events_sock_path = abspath(conf.resty_events_sock_path or
+  local resty_events_sock_path = getenv("KONG_RESTY_EVENTS_SOCK_PATH")
+  conf.resty_events_sock_path = abspath(resty_events_sock_path or
                                         conf.prefix or ngx.config.prefix())
 
   log.verbose("resty-events socket file in use: %s", conf.resty_events_sock_path)
