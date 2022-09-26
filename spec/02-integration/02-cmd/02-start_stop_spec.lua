@@ -858,8 +858,14 @@ describe("kong start/stop #" .. strategy, function()
   end)
 
   describe("customize env resty_events_sock_path", function()
+    local lfs = require "lfs"
+
     local prefix = helpers.test_conf.prefix
     local resty_events_sock_path = "/tmp"
+
+    local function is_socket(path)
+      return lfs.attributes(path, "mode") == "socket"
+    end
 
     after_each(function()
       assert(helpers.stop_kong(prefix))
@@ -878,6 +884,8 @@ describe("kong start/stop #" .. strategy, function()
 
       assert.truthy(helpers.path.exists(http_sock))
       assert.truthy(helpers.path.exists(stream_sock))
+      assert.truthy(is_socket(http_sock))
+      assert.truthy(is_socket(stream_sock))
 
       local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
       assert.matches("listen unix:" .. http_sock, contents, nil, true)
@@ -903,6 +911,8 @@ describe("kong start/stop #" .. strategy, function()
       assert.falsy(helpers.path.exists(prefix .. "/stream_worker_events.sock"))
       assert.truthy(helpers.path.exists(http_sock))
       assert.truthy(helpers.path.exists(stream_sock))
+      assert.truthy(is_socket(http_sock))
+      assert.truthy(is_socket(stream_sock))
 
       local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
       assert.matches("listen unix:" .. http_sock, contents, nil, true)
@@ -929,6 +939,8 @@ describe("kong start/stop #" .. strategy, function()
 
       assert.truthy(helpers.path.exists(http_sock))
       assert.truthy(helpers.path.exists(stream_sock))
+      assert.truthy(is_socket(http_sock))
+      assert.truthy(is_socket(stream_sock))
 
       local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
       assert.matches("listen unix:" .. http_sock, contents, nil, true)
