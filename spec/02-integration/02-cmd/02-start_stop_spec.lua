@@ -857,70 +857,70 @@ describe("kong start/stop #" .. strategy, function()
     end)
   end)
 
+  describe("customize env resty_events_sock_path", function()
+    local prefix = helpers.test_conf.prefix
+    local resty_events_sock_path = "/tmp"
+
+    after_each(function()
+      assert(helpers.stop_kong(prefix))
+    end)
+
+    it("equals to prefix by default", function()
+
+      assert(helpers.kong_exec("start", {
+        prefix = prefix,
+        database = strategy,
+        stream_listen = "127.0.0.1:9022",
+      }))
+
+      assert.truthy(helpers.path.exists(prefix .. "/worker_events.sock"))
+      assert.truthy(helpers.path.exists(prefix .. "/stream_worker_events.sock"))
+
+      local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
+      assert.matches("listen unix:" .. prefix .. "/worker_events.sock;", contents, nil, true)
+
+      local contents = helpers.file.read(prefix .. "/nginx-kong-stream.conf")
+      assert.matches("listen unix:" .. prefix .. "/stream_worker_events.sock;", contents, nil, true)
+
+    end)
+
+    it("is different from prefix", function()
+
+      assert(helpers.kong_exec("start", {
+        prefix = prefix,
+        resty_events_sock_path = resty_events_sock_path,
+        database = strategy,
+        stream_listen = "127.0.0.1:9022",
+      }))
+
+      assert.falsy(helpers.path.exists(prefix .. "/worker_events.sock"))
+      assert.falsy(helpers.path.exists(prefix .. "/stream_worker_events.sock"))
+      assert.truthy(helpers.path.exists(resty_events_sock_path .. "/worker_events.sock"))
+      assert.truthy(helpers.path.exists(resty_events_sock_path .. "/stream_worker_events.sock"))
+
+      local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
+      assert.matches("listen unix:" .. resty_events_sock_path .. "/worker_events.sock;", contents, nil, true)
+
+      local contents = helpers.file.read(prefix .. "/nginx-kong-stream.conf")
+      assert.matches("listen unix:" .. resty_events_sock_path .. "/stream_worker_events.sock;", contents, nil, true)
+
+    end)
+
+    it("dangling socket cleanup", function()
+
+      os.execute("touch " .. resty_events_sock_path .. "/worker_events.sock")
+      os.execute("touch " .. resty_events_sock_path .. "/stream_worker_events.sock")
+
+      assert(helpers.kong_exec("start", {
+        prefix = prefix,
+        resty_events_sock_path = resty_events_sock_path,
+        database = strategy,
+        stream_listen = "127.0.0.1:9022",
+      }))
+
+    end)
+  end)
+
 end)
 end
-
-describe("customize env resty_events_sock_path", function()
-  local prefix = helpers.test_conf.prefix
-  local resty_events_sock_path = "/tmp"
-
-  after_each(function()
-    assert(helpers.stop_kong(prefix))
-  end)
-
-  it("equals to prefix by default", function()
-
-    assert(helpers.kong_exec("start", {
-      prefix = prefix,
-      database = "off",
-      stream_listen = "127.0.0.1:9022",
-    }))
-
-    assert.truthy(helpers.path.exists(prefix .. "/worker_events.sock"))
-    assert.truthy(helpers.path.exists(prefix .. "/stream_worker_events.sock"))
-
-    local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
-    assert.matches("listen unix:" .. prefix .. "/worker_events.sock;", contents, nil, true)
-
-    local contents = helpers.file.read(prefix .. "/nginx-kong-stream.conf")
-    assert.matches("listen unix:" .. prefix .. "/stream_worker_events.sock;", contents, nil, true)
-
-  end)
-
-  it("is different from prefix", function()
-
-    assert(helpers.kong_exec("start", {
-      prefix = prefix,
-      resty_events_sock_path = resty_events_sock_path,
-      database = "off",
-      stream_listen = "127.0.0.1:9022",
-    }))
-
-    assert.falsy(helpers.path.exists(prefix .. "/worker_events.sock"))
-    assert.falsy(helpers.path.exists(prefix .. "/stream_worker_events.sock"))
-    assert.truthy(helpers.path.exists(resty_events_sock_path .. "/worker_events.sock"))
-    assert.truthy(helpers.path.exists(resty_events_sock_path .. "/stream_worker_events.sock"))
-
-    local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
-    assert.matches("listen unix:" .. resty_events_sock_path .. "/worker_events.sock;", contents, nil, true)
-
-    local contents = helpers.file.read(prefix .. "/nginx-kong-stream.conf")
-    assert.matches("listen unix:" .. resty_events_sock_path .. "/stream_worker_events.sock;", contents, nil, true)
-
-  end)
-
-  it("dangling socket cleanup", function()
-
-    os.execute("touch " .. resty_events_sock_path .. "/worker_events.sock")
-    os.execute("touch " .. resty_events_sock_path .. "/stream_worker_events.sock")
-
-    assert(helpers.kong_exec("start", {
-      prefix = prefix,
-      resty_events_sock_path = resty_events_sock_path,
-      database = "off",
-      stream_listen = "127.0.0.1:9022",
-    }))
-
-  end)
-end)
 
