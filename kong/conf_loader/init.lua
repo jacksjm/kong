@@ -530,7 +530,6 @@ local CONF_INFERENCES = {
   untrusted_lua_sandbox_requires = { typ = "array" },
   untrusted_lua_sandbox_environment = { typ = "array" },
 
-  resty_events_sock_path = { typ = "string" },
   legacy_worker_events = { typ = "boolean" },
   legacy_hybrid_protocol = { typ = "boolean" },
 
