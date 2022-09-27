@@ -863,6 +863,9 @@ describe("kong start/stop #" .. strategy, function()
     local prefix = helpers.test_conf.prefix
     local resty_events_sock_path = "/tmp"
 
+    local http_conf = prefix .. "/nginx-kong.conf"
+    local stream_conf = prefix .. "/nginx-kong-stream.conf"
+
     local function is_socket(path)
       return lfs.attributes(path, "mode") == "socket"
     end
@@ -887,10 +890,10 @@ describe("kong start/stop #" .. strategy, function()
       assert.truthy(is_socket(http_sock))
       assert.truthy(is_socket(stream_sock))
 
-      local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
+      local contents = helpers.file.read(http_conf)
       assert.matches("listen unix:" .. http_sock, contents, nil, true)
 
-      local contents = helpers.file.read(prefix .. "/nginx-kong-stream.conf")
+      local contents = helpers.file.read(stream_conf)
       assert.matches("listen unix:" .. stream_sock, contents, nil, true)
 
     end)
@@ -914,10 +917,10 @@ describe("kong start/stop #" .. strategy, function()
       assert.truthy(is_socket(http_sock))
       assert.truthy(is_socket(stream_sock))
 
-      local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
+      local contents = helpers.file.read(http_conf)
       assert.matches("listen unix:" .. http_sock, contents, nil, true)
 
-      local contents = helpers.file.read(prefix .. "/nginx-kong-stream.conf")
+      local contents = helpers.file.read(stream_conf)
       assert.matches("listen unix:" .. stream_sock, contents, nil, true)
 
     end)
@@ -942,10 +945,10 @@ describe("kong start/stop #" .. strategy, function()
       assert.truthy(is_socket(http_sock))
       assert.truthy(is_socket(stream_sock))
 
-      local contents = helpers.file.read(prefix .. "/nginx-kong.conf")
+      local contents = helpers.file.read(http_conf)
       assert.matches("listen unix:" .. http_sock, contents, nil, true)
 
-      local contents = helpers.file.read(prefix .. "/nginx-kong-stream.conf")
+      local contents = helpers.file.read(stream_conf)
       assert.matches("listen unix:" .. stream_sock, contents, nil, true)
 
     end)
