@@ -1753,6 +1753,26 @@ for _, flavor in ipairs({ "traditional", "traditional_compatible", "expressions"
             assert.falsy(match_t)
           end)
 
+          it("update with wrong route", function()
+            local use_case = {
+              {
+                service = service,
+                route = {
+                  id = "e8fb37f1-102d-461e-9c51-6608a6bb8101",
+                  paths = { "~/delay/(?<delay>[^\\/]+)$", },
+                  updated_at = 100,
+                },
+              },
+            }
+
+            local nrouter = assert(new_router(use_case, router))
+
+            assert.equal(nrouter, router)
+            assert.falsy(nrouter.rebuilding)
+
+            assert.equal(#nrouter.routes, 0)
+          end)
+
           it("update skips routes if updated_at is unchanged", function()
             local use_case = {
               {
@@ -1811,7 +1831,6 @@ for _, flavor in ipairs({ "traditional", "traditional_compatible", "expressions"
                 },
               }
             }
-
 
             local nrouter = assert(new_router(use_case, router))
 

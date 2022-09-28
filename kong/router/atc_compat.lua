@@ -427,7 +427,7 @@ local function add_atc_matcher(inst, route, route_id,
 
   local ok, err = inst:add_matcher(priority, route_id, atc)
   if not ok then
-    return nil, "could not add route:" .. route_id .. ", " .. err
+    return nil, "could not add route:" .. route_id .. ", [" .. err .. "]"
   end
 
   return true
@@ -462,6 +462,9 @@ local function new_from_scratch(routes, is_traditional_compatible)
 
     else
       ngx_log(ngx_WARN, err)
+
+      routes_t[route_id] = nil
+      services_t[route_id] = nil
     end
 
     yield(true)
@@ -531,6 +534,9 @@ local function new_from_previous(routes, is_traditional_compatible, old_router)
 
     else
       ngx_log(ngx_WARN, err)
+
+      old_routes[route_id] = nil
+      old_services[route_id] = nil
     end
 
     yield(true)
