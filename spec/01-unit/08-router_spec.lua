@@ -1767,11 +1767,8 @@ for _, flavor in ipairs({ "traditional", "traditional_compatible", "expressions"
 
             local ok, nrouter = pcall(new_router, use_case, router)
 
-            assert.falsy(router.rebuilding)
-
             assert(ok)
             assert.equal(nrouter, router)
-
             assert.equal(#nrouter.routes, 0)
           end)
 
