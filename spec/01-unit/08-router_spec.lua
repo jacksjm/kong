@@ -1765,8 +1765,9 @@ for _, flavor in ipairs({ "traditional", "traditional_compatible", "expressions"
               },
             }
 
-            local nrouter = assert(new_router(use_case, router))
+            local ok, nrouter = pcall(new_router, use_case, router)
 
+            assert(ok)
             assert.equal(nrouter, router)
             assert.falsy(nrouter.rebuilding)
 
