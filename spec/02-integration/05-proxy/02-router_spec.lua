@@ -2336,18 +2336,19 @@ for _, strategy in helpers.each_strategy() do
       assert.equal("no Service found with those values", json.message)
     end)
 
-    it("#only rebuilds router correctly after passing invalid route", function()
+    it("rebuilds router correctly after passing invalid route", function()
       local admin_client = helpers.admin_client()
 
       local res = assert(admin_client:post("/routes", {
         headers = { ["Content-Type"] = "application/json" },
         body = {
+          -- this is a invalid regex path
           paths = { "~/delay/(?<delay>[^\\/]+)$", },
         },
       }))
       assert.res_status(201, res)
 
-      ngx.sleep(5)  -- wait router rebuiling finish
+      ngx.sleep(1)  -- wait router rebuiling finish
 
       local res = assert(admin_client:post("/routes", {
         headers = { ["Content-Type"] = "application/json" },
@@ -2359,7 +2360,7 @@ for _, strategy in helpers.each_strategy() do
 
       admin_client:close()
 
-      ngx.sleep(2)  -- wait router rebuiling finish
+      ngx.sleep(1)  -- wait router rebuiling finish
 
       proxy_client:close()
       proxy_client = helpers.proxy_client()
