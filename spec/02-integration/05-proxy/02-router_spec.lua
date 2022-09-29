@@ -2336,7 +2336,7 @@ for _, strategy in helpers.each_strategy() do
       assert.equal("no Service found with those values", json.message)
     end)
 
-    it("rebuilds router correctly after passing invalid route", function()
+    it("#db rebuilds router correctly after passing invalid route", function()
       local admin_client = helpers.admin_client()
 
       local res = assert(admin_client:post("/routes", {
