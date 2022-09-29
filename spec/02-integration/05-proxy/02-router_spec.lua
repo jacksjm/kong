@@ -2348,7 +2348,7 @@ for _, strategy in helpers.each_strategy() do
       }))
       assert.res_status(201, res)
 
-      ngx.sleep(1)  -- wait router rebuiling finish
+      helpers.wait_for_all_config_update()
 
       local res = assert(admin_client:post("/routes", {
         headers = { ["Content-Type"] = "application/json" },
@@ -2360,7 +2360,7 @@ for _, strategy in helpers.each_strategy() do
 
       admin_client:close()
 
-      ngx.sleep(1)  -- wait router rebuiling finish
+      helpers.wait_for_all_config_update()
 
       proxy_client:close()
       proxy_client = helpers.proxy_client()
