@@ -422,12 +422,12 @@ local function add_atc_matcher(inst, route, route_id,
   end
 
   if remove_existing and not inst:remove_matcher(route_id) then
-    return nil, "could not remove route:" .. route_id
+    return nil, "could not remove route: " .. route_id
   end
 
   local ok, err = inst:add_matcher(priority, route_id, atc)
   if not ok then
-    return nil, "could not add route:" .. route_id .. ", [" .. err .. "]"
+    return nil, "could not add route: " .. route_id .. ", err: " .. err
   end
 
   return true
