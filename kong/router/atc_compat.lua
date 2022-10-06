@@ -37,6 +37,7 @@ local ngx_log       = ngx.log
 local get_method    = ngx.req.get_method
 local get_headers   = ngx.req.get_headers
 local ngx_WARN      = ngx.WARN
+local ngx_ERR       = ngx.ERR
 
 
 local sanitize_uri_postfix = utils.sanitize_uri_postfix
@@ -461,7 +462,7 @@ local function new_from_scratch(routes, is_traditional_compatible)
       new_updated_at = max(new_updated_at, route.updated_at or 0)
 
     else
-      ngx_log(ngx_WARN, err)
+      ngx_log(ngx_ERR, err)
 
       routes_t[route_id] = nil
       services_t[route_id] = nil
@@ -533,7 +534,7 @@ local function new_from_previous(routes, is_traditional_compatible, old_router)
       new_updated_at = max(new_updated_at, route_updated_at)
 
     else
-      ngx_log(ngx_WARN, err)
+      ngx_log(ngx_ERR, err)
 
       old_routes[route_id] = nil
       old_services[route_id] = nil
